@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>TIME Portfolio Assessment</title>
+  <meta name="description" content="Application portfolio rationalisation using Gartner's TIME model: Tolerate, Invest, Migrate, Eliminate.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <i class="q tolerate"></i><i class="q invest"></i><i class="q eliminate"></i><i class="q migrate"></i>
+      </span>
+      <div>
+        <h1>TIME Assessment</h1>
+        <p class="sub">Tolerate · Invest · Migrate · Eliminate</p>
+      </div>
+    </div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-view="dashboard" class="active">Dashboard</button>
+      <button role="tab" data-view="inventory">Applications</button>
+      <button role="tab" data-view="assess">Assess</button>
+      <button role="tab" data-view="settings">Criteria</button>
+      <button role="tab" data-view="guide">Guide</button>
+    </nav>
+  </header>
+
+  <main>
+    <!-- DASHBOARD -->
+    <section id="view-dashboard" class="view active">
+      <div class="kpis" id="kpis"></div>
+      <div class="grid-2">
+        <div class="card">
+          <div class="card-head">
+            <h2>TIME matrix</h2>
+            <span class="muted small">Bubble size = annual cost · click a bubble to assess</span>
+          </div>
+          <div id="matrix" class="matrix-wrap"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Recommendations</h2></div>
+          <div id="recommendations"></div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-head">
+          <h2>Portfolio report</h2>
+          <div class="btn-row">
+            <button class="btn ghost" id="btn-export-csv">Export CSV</button>
+            <button class="btn ghost" id="btn-print">Print / PDF</button>
+          </div>
+        </div>
+        <div id="report"></div>
+      </div>
+    </section>
+
+    <!-- INVENTORY -->
+    <section id="view-inventory" class="view">
+      <div class="card">
+        <div class="card-head">
+          <h2>Application inventory</h2>
+          <div class="btn-row">
+            <input type="search" id="inv-search" placeholder="Search…" aria-label="Search applications">
+            <button class="btn" id="btn-add-app">+ Add application</button>
+          </div>
+        </div>
+        <div class="table-wrap"><table class="table" id="inv-table"></table></div>
+        <p class="muted small" id="inv-empty" hidden>No applications yet. Add one, import a file, or load the sample portfolio below.</p>
+      </div>
+      <div class="card">
+        <div class="card-head"><h2>Data</h2></div>
+        <p class="muted small">Your data is saved automatically in this browser. Export a JSON backup to share it or move it to another computer.</p>
+        <div class="btn-row wrap">
+          <button class="btn ghost" id="btn-export-json">Export JSON</button>
+          <label class="btn ghost file-btn">Import JSON<input type="file" id="file-import-json" accept=".json,application/json" hidden></label>
+          <label class="btn ghost file-btn">Import CSV<input type="file" id="file-import-csv" accept=".csv,text/csv" hidden></label>
+          <button class="btn ghost" id="btn-sample">Load sample portfolio</button>
+          <button class="btn danger" id="btn-clear">Clear all</button>
+        </div>
+        <p class="muted small">CSV import columns: <code>name, owner, domain, annualCost, users, lifecycle, notes</code> (header row required).</p>
+      </div>
+    </section>
+
+    <!-- ASSESS -->
+    <section id="view-assess" class="view">
+      <div class="card assess-head">
+        <label class="field grow">
+          <span>Application</span>
+          <select id="assess-select"></select>
+        </label>
+        <div class="assess-nav btn-row">
+          <button class="btn ghost" id="assess-prev" aria-label="Previous application">‹ Prev</button>
+          <button class="btn ghost" id="assess-next" aria-label="Next application">Next ›</button>
+        </div>
+      </div>
+      <div id="assess-body"></div>
+    </section>
+
+    <!-- SETTINGS -->
+    <section id="view-settings" class="view">
+      <div class="card">
+        <div class="card-head"><h2>Classification threshold</h2></div>
+        <p class="muted small">Scores at or above the threshold count as <b>high</b>. The default of 3.0 is the midpoint of the 1–5 scale.</p>
+        <label class="field inline">
+          <input type="range" id="threshold" min="1.5" max="4.5" step="0.1">
+          <output id="threshold-out"></output>
+        </label>
+      </div>
+      <div class="grid-2">
+        <div class="card"><div class="card-head"><h2>Business value criteria</h2></div><div id="crit-bv"></div>
+          <button class="btn ghost" data-add-crit="bv">+ Add criterion</button></div>
+        <div class="card"><div class="card-head"><h2>Technical fit criteria</h2></div><div id="crit-tf"></div>
+          <button class="btn ghost" data-add-crit="tf">+ Add criterion</button></div>
+      </div>
+      <div class="btn-row"><button class="btn danger" id="btn-reset-criteria">Reset criteria to defaults</button></div>
+    </section>
+
+    <!-- GUIDE -->
+    <section id="view-guide" class="view">
+      <div class="card prose">
+        <h2>What is the Gartner TIME model?</h2>
+        <p>TIME is a framework from Gartner for <b>application portfolio rationalisation</b>. Every application is rated on two dimensions and the result places it into one of four actions:</p>
+        <div class="guide-matrix">
+          <div class="gq migrate"><b>Migrate</b><span>High value · Low tech fit</span></div>
+          <div class="gq invest"><b>Invest</b><span>High value · High tech fit</span></div>
+          <div class="gq eliminate"><b>Eliminate</b><span>Low value · Low tech fit</span></div>
+          <div class="gq tolerate"><b>Tolerate</b><span>Low value · High tech fit</span></div>
+        </div>
+        <ul>
+          <li><b>Business value</b> (vertical axis) — how much the business needs and benefits from the application.</li>
+          <li><b>Technical fit</b> (horizontal axis) — how healthy, secure, supportable and future-proof the technology is.</li>
+        </ul>
+
+        <h3>An analogy: clearing out your wardrobe</h3>
+        <p>Imagine sorting every item of clothing you own by two questions: <i>"Do I actually wear it?"</i> (business value) and <i>"What condition is it in?"</i> (technical fit).</p>
+        <ul>
+          <li><b>Invest</b> — your favourite jacket in great condition. Wear it, care for it, buy things that go with it.</li>
+          <li><b>Migrate</b> — your favourite shoes, but the soles are worn through. You need them, so get them re-soled or buy a modern replacement.</li>
+          <li><b>Tolerate</b> — a perfectly good shirt you rarely wear. It's not hurting anyone; keep it, but don't spend money on it.</li>
+          <li><b>Eliminate</b> — a torn sweater you haven't worn in years. It takes up space; donate or bin it.</li>
+        </ul>
+        <p>Applications work the same way — except the "wardrobe space" is budget, licences, infrastructure and support effort.</p>
+
+        <h3>How to run an assessment with this tool</h3>
+        <ol>
+          <li><b>Build the inventory</b> on the <i>Applications</i> tab (add manually, import CSV, or start from the sample).</li>
+          <li><b>Agree the criteria</b> and weights on the <i>Criteria</i> tab with business and IT stakeholders.</li>
+          <li><b>Score each application</b> 1–5 per criterion on the <i>Assess</i> tab. Ideally, business owners score <i>value</i> and architects score <i>technical fit</i>.</li>
+          <li><b>Review the matrix</b> on the <i>Dashboard</i>. Challenge results near the threshold lines, and use an override (with a documented rationale) where context outweighs the numbers.</li>
+          <li><b>Turn results into a roadmap</b>: funding for Invest, modernisation projects for Migrate, cost caps for Tolerate and retirement plans for Eliminate.</li>
+        </ol>
+
+        <h3>Scoring scale</h3>
+        <table class="table compact">
+          <tr><th>Score</th><th>Meaning</th></tr>
+          <tr><td>1</td><td>Very poor — serious problems</td></tr>
+          <tr><td>2</td><td>Poor — below expectations</td></tr>
+          <tr><td>3</td><td>Adequate — acceptable</td></tr>
+          <tr><td>4</td><td>Good — above expectations</td></tr>
+          <tr><td>5</td><td>Excellent — best in class</td></tr>
+        </table>
+        <p class="muted small">Each dimension's score is the weighted average of its answered criteria. Unanswered criteria are ignored, and the completeness meter shows how much of the assessment is done.</p>
+      </div>
+    </section>
+  </main>
+
+  <!-- Add / edit application dialog -->
+  <dialog id="app-dialog">
+    <form method="dialog" id="app-form">
+      <h2 id="app-dialog-title">Add application</h2>
+      <div class="form-grid">
+        <label class="field span-2"><span>Name *</span><input name="name" required maxlength="120"></label>
+        <label class="field"><span>Business owner</span><input name="owner" maxlength="120"></label>
+        <label class="field"><span>Domain / capability</span><input name="domain" maxlength="120" list="domain-list"></label>
+        <label class="field"><span>Annual cost</span><input name="annualCost" type="number" min="0" step="any"></label>
+        <label class="field"><span>Number of users</span><input name="users" type="number" min="0" step="1"></label>
+        <label class="field"><span>Lifecycle stage</span>
+          <select name="lifecycle">
+            <option value="">—</option><option>Emerging</option><option>Mainstream</option>
+            <option>Containment</option><option>Sunset</option><option>Retired</option>
+          </select></label>
+        <label class="field span-2"><span>Notes</span><textarea name="notes" rows="3"></textarea></label>
+      </div>
+      <datalist id="domain-list"></datalist>
+      <div class="btn-row end">
+        <button class="btn ghost" value="cancel" formnovalidate>Cancel</button>
+        <button class="btn" value="save">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div id="toast" role="status" aria-live="polite"></div>
+
+  <script src="scoring.js"></script>
+  <script src="sample-data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
